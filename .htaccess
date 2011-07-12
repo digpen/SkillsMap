@@ -1,0 +1,41 @@
+<IfModule mod_rewrite.c>
+  <filesmatch "(\.php|/)?$">
+    Options +FollowSymLinks
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d [OR]
+    RewriteCond %{REQUEST_URI} ^/skillsmap/$
+    RewriteRule ^.*$ /skillsmap/application/website.php
+  </filesmatch>
+</ifmodule>
+# GZip Components ####################################
+<ifmodule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/text text/plain text/xml text/css application/x-javascript application/javascript image/vnd.microsoft.icon
+# Some older browsers only allow GZipping of HTML ####
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</ifmodule>
+# Expiry Headers for HTTP/1.0 (28 Days) ###############
+<ifmodule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/vnd.microsoft.icon "access plus 2419200 seconds"
+  ExpiresByType image/gif "access plus 2419200 seconds"
+  ExpiresByType image/jpeg "access plus 2419200 seconds"
+  ExpiresByType image/png "access plus 2419200 seconds"
+  ExpiresByType text/css "access plus 2419200 seconds"
+  ExpiresByType application/javascript "access plus 2419200 seconds"
+  ExpiresByType application/x-javascript "access plus 2419200 seconds"
+</ifmodule>
+<filesmatch "\.(ico|flv|jpg|jpeg|png|gif|css|js|swf|doc|pdf)$">
+# Don't send Entity Tags for static content #########
+  FileETag None
+# Cache-Control for HTTP/1.1 (Max-age 28 Days) #####
+  <ifmodule mod_headers.c>
+    Header set Cache-Control "must-revalidate, max-age=2419200, public"
+  </ifmodule>
+</filesmatch>
+<files .htaccess>
+  order allow,deny
+  deny from all
+</files>

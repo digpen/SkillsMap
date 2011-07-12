@@ -1,0 +1,89 @@
+/* FLOAT FIXING ###########################*/
+* html .floatFix, * html .ctrl, * html .submit {height: 1px;} /* ie 6 */
+.floatFix, .ctrl, .submit {min-height: 0;} /* ie 7 */
+.floatFix:after, .ctrl:after, .submit:after {
+    content: " ";
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    display: block;
+	font-size: 0;
+}
+/* SITE ###################################*/
+#wrap {
+	width: 960px;
+	margin: 0 auto;
+}
+#nav {display: none;}
+/* SKILLS MAP #############################*/
+fieldset {
+	padding: 10px;
+	background: #EEE;
+	border: 1px solid #CCC;
+}
+fieldset > div {
+	padding: 3px 0;
+}
+fieldset input[type=text], fieldset select, fieldset label, #skills {float: left; margin-right: 8px;}
+fieldset div > label:first-child {
+	width: 25%;
+	float: left;
+	text-align: right;
+	clear: left;
+}
+#q {width: 250px;}
+#tabs {
+	list-style: none;
+	display: block;
+	padding: 10px 10px 0 10px;
+	margin: 0;
+}
+#tabs li {
+	padding: 0 0 0 10px;
+	margin: 0;
+	float: left;
+}
+#tabs li a {
+	padding: 5px 10px;
+	display: block;
+	border: 1px solid #CCC;
+	position: relative;
+	top: 1px;
+	background: #EEE;
+}
+#tabs li.on a {
+	border-bottom: 0;
+	padding-bottom: 6px;
+	background: #FFF;
+}
+#list, #map {
+	padding: 10px;
+	border: 1px solid #CCC;
+	margin: 0;
+}
+#skills {
+	list-style: none;
+	display: block;
+	margin: 0 8px 0 0;
+	padding: 0;
+	width: 40%;
+}
+#skills > li {
+	display: block;
+}
+#skills label {
+	float: none;
+	display: block;
+	padding-bottom: 5px;
+}
+#skills ul {
+	padding: 10px;
+	background: #FFF;
+	border: 1px solid #CCC;
+	list-style: none;
+	margin: 0 0 10px 0;
+}
+#skills ul li {
+	float: left;
+	width: 49%;
+}
