@@ -1,3 +1,4 @@
+body {font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; font-size: 85%;}
 /* FLOAT FIXING ###########################*/
 * html .floatFix, * html .ctrl, * html .submit {height: 1px;} /* ie 6 */
 .floatFix, .ctrl, .submit {min-height: 0;} /* ie 7 */
@@ -15,6 +16,10 @@
 	margin: 0 auto;
 }
 #nav {display: none;}
+.centre {text-align: center;}
+.right {text-align: right;}
+#msg {border: 1px solid #CCC; background: #66FF66; padding: 10px; margin: 0 0 10px 0;}
+#msg.error {background: #FF6666;}
 /* SKILLS MAP #############################*/
 fieldset {
 	padding: 10px;
@@ -24,7 +29,7 @@ fieldset {
 fieldset > div {
 	padding: 3px 0;
 }
-fieldset input[type=text], fieldset select, fieldset label, #skills {float: left; margin-right: 8px;}
+fieldset input, fieldset select, fieldset label, #skills {float: left; margin-right: 8px;}
 fieldset div > label:first-child {
 	width: 25%;
 	float: left;
@@ -32,6 +37,7 @@ fieldset div > label:first-child {
 	clear: left;
 }
 #q {width: 250px;}
+.submit {margin-left: 8px; padding-left: 25%;}
 #tabs {
 	list-style: none;
 	display: block;

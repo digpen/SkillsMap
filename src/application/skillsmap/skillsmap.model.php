@@ -24,16 +24,21 @@ class skillsmapModel extends database {
 		return $this->getData('SELECT `sgID` AS `group`, `sgName` AS `groupname`, `sgDescription` AS `groupdesc`, `skillID` AS `skill`, `skillName` AS `skillname`, `skillDescription` AS `skilldesc` FROM `skillgroups`, `skills` WHERE `sgID`=`skillGroup` ORDER BY `sgName`, `skillName`;');
 	}
 	
-	public function getSearch() {
+	public function getSearch($debug = false) {
+		$fields = Array(
+			'`profileName` AS `name`',
+			'CONCAT("'.SCRIPTNAME.'", `profileSeoName`, "/") AS `href`',
+			'`profileTown` AS `town`',
+			'IF(`profileImage`="", "", CONCAT("'.FOLDER.$this->config['imagefolder'].'", `profileImage`, "-m.jpg")) AS `image`',
+			'`profileDescription` AS `desc`'
+		);
 		$tables = '`profiles`';
 		$sql = Array();
+		$relevance = Array();
 		// KEYWORD SEARCHING #####################
-		if (!empty($this->search) && preg_match_all('#(NOT )?([a-zA-Z@.0-9\']+|"[^"]+")( OR)?#', str_replace(' OR NOT ', ' OR ', $this->search), $matches)) {
+		if (!empty($this->search) && preg_match_all('#(NOT )?([a-zA-Z@.0-9\']++|"[^"]++")( OR)?#', str_replace(' OR NOT ', ' OR ', $this->search), $matches)) {
+			$terms = $matches[2];
 			$matches = array_map(null, $matches[1], $matches[2], $matches[3]);
-			$fields = Array();
-			foreach ($this->config['searchFields'] AS $item) {
-				$fields = array_merge($fields, $item);
-			}
 			$query = Array();
 			$or = false;
 			$short = '';
@@ -48,12 +53,24 @@ class skillsmapModel extends database {
 				$or = $isOr;
 			}
 			if ($isOr) $query .= ')';
+			$search = Array();
+			foreach ($this->config['searchFields'] AS $key => $item) {
+				$search = array_merge($search, $item);
+				$relevance[$key] = 'MATCH(`'.implode('`, `', $item).'`) AGAINST ("'.implode('", "', $terms).'")';
+				if ($debug && $key != 'desc') $fields[] = 'CONCAT_WS(", ", `'.implode('`, `', $item).'`) AS `'.$key.'`';
+			}
 			if (empty($query)) $sql[] = $short;
-			else $sql[] = 'MATCH(`'.implode('`, `', $fields).'`) AGAINST (\''.implode(' ', $query).'\' IN BOOLEAN MODE)'.$short;
+			else $sql[] = 'MATCH(`'.implode('`, `', $search).'`) AGAINST (\''.implode(' ', $query).'\' IN BOOLEAN MODE)'.$short;
 		}
 		// DISTANCE MATCHING #####################
 		if ($this->postcode !== false) {
-			$sql[] = $this->getDistanceSql('`profileLat`', '`profileLng`', $this->coords['lat'], $this->coords['lng']).'<'.$this->distance;
+			$distance = $this->getDistanceSql('`profileLat`', '`profileLng`', $this->coords['lat'], $this->coords['lng']);
+			$sql[] = $distance.'<'.$this->distance;
+			$relevance['distance'] = '('.$this->distance.'-'.$distance.')/'.$this->distance;
+			if ($debug) {
+				$fields[] = $distance.' AS `distance`';
+				$fields[] = $this->distance.' AS `distancemax`';
+			}
 		}
 		// SKILLS ################################
 		$skill = !empty($this->skills);
@@ -66,12 +83,34 @@ class skillsmapModel extends database {
 		} elseif (!empty($this->skills)) {
 			$tables .= ', `profileskills`';
 			$sql[] = '`psProfile`=`profileID` AND `psSkill` IN ('.implode(',', $this->skills).')';
+			$relevance['skills'] = 'COUNT(`psID`)/'.count($this->skills);
+			if ($debug) {
+				$fields[] = 'COUNT(`psID`) AS `skills`';
+				$fields[] = count($this->skills).' AS `skillsmax`';
+			}
+			$relevance['level'] = '(SUM(psLevel)/COUNT(`psID`))/'.$this->config['maxlevel'];
+			if ($debug) {
+				$fields[] = 'SUM(psLevel) AS `level`';
+				$fields[] = 'COUNT(`psID`) AS `levelmax`';
+			}
 		}
-		return $this->getData('SELECT `profileName` AS `name`, CONCAT("'.SCRIPTNAME.'", `profileSeoName`, "/") AS `href`, `profileTown` AS `town`, IF(`profileImage`="", "", CONCAT("'.FOLDER.$this->config['imagefolder'].'", `profileImage`, "-m.jpg")) AS `image`, `profileDescription` AS `desc` FROM '.$tables.(empty($sql) ? '' : ' WHERE '.implode(' AND ', $sql)).' GROUP BY `profileID`'.$this->getSortLimitSql());
+		// RELEVANCY ############################
+		if (empty($relevance)) {
+			return Array();
+		} else {
+			foreach ($relevance AS $key => &$item) {
+				if ($debug) $fields[] = $item.' AS `'.$key.'calc`';
+				$item = '('.$item.')*'.$this->config['weightings'][$key];
+				if ($debug) $fields[] = $item.' AS `'.$key.'total`';
+			}
+			$fields[] = '('.implode(')+(', $relevance).') AS `relevance`';
+			$query = 'SELECT '.implode(', ', $fields).' FROM '.$tables.(empty($sql) ? '' : ' WHERE '.implode(' AND ', $sql)).' GROUP BY `profileID`'.$this->getSortLimitSql('`relevance`', 'desc', $this->page, $this->show);
+			return $this->getData($query);
+		}
 	}
 	
 	public function getProfile($profile) {
-		return $this->getData('SELECT ');
+		return $this->getData('SELECT `profileName` AS `name`, `profileDescription` AS `desc`, `profileTown` AS `town` FROM `profiles` WHERE `profileSeoName`="'.$this->slashData($profile).'" LIMIT 1;');
 	}
 	
 	public function geocodeQuery($query) {

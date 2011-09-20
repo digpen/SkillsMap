@@ -129,7 +129,7 @@ class database {
 		if (!is_array($sort)) $sort = $sort != '' ? Array($sort) : Array();
 		if (count($sort) > 0) {
 			foreach ($sort AS $key => $value) $sort[$key] = $value;
-			$sql = ' ORDER BY '.implode(' '.strToUpper($order).', ', $sort).' '.strToUpper($order);
+			$sql = ' ORDER BY '.implode(' '.strtoupper($order).', ', $sort).' '.strtoupper($order);
 		}
 		if ($show > 0) $sql .= ' LIMIT '.(($page-1) * $show).', '.$show.';';
 		return $sql;

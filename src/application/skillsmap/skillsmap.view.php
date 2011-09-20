@@ -39,10 +39,10 @@ class skillsmapView {
 			$html .= '</ul></li></ul></div>';
 		}
 		$html .= '</div>';
-		// ADVANCED CONTROL ###################
-		$html .= '<a href="'.template::getQueryString(Array('advanced' => (int) !$this->model->advanced), true, true, SCRIPTNAME).'">'.(!$this->model->advanced ? 'Advanced Options' : 'Hide Advanced Options').'</a>';
 		// SUBMIT #############################
-		$html .= '<input type="submit" value="Search" />';
+		$html .= '<div class="floatFix submit"><input type="submit" value="Search" />';
+		// ADVANCED CONTROL ###################
+		$html .= '<a href="'.template::getQueryString(Array('advanced' => (int) !$this->model->advanced), true, true, SCRIPTNAME).'">'.(!$this->model->advanced ? 'Advanced Options' : 'Hide Advanced Options').'</a></div>';
 		return $html.'</fieldset></form>';
 	}
 	
@@ -56,35 +56,68 @@ class skillsmapView {
 	}
 	
 	public function drawList() {
+		$debug = $this->model->config['debug'];
 		$html = $this->drawSearchControls();
-		if (($data = $this->model->getSearch()) !== false) {
+		if (($data = $this->model->getSearch($debug)) !== false && !empty($data)) {
 			$html .= $this->drawTabs('list');
 			$html .= '<ol id="list">';
 			foreach ($data AS $item) {
 				$html .= '<li>';
-				$html .= '<h3>'.htmlspecialchars($item['name']).'</h3>';
+				$html .= '<h3><a href="'.htmlspecialchars($item['href']).'" title="View this profile">'.htmlspecialchars($item['name']).'</a></h3>';
 				$html .= '<div class="town">'.htmlspecialchars($item['town']).'</div>';
 				if (!empty($item['image']) && file_exists($item['image'])) {
 					$size = getimagesize($item['image']);
 					$html .= '<img src="'.htmlspecialchars($item['image']).'" alt="'.htmlspecialchars($item['name']).' picture" width="'.$size[0].'" height="'.$size[1].'" />';
 				}
 				$html .= '<p>'.htmlspecialchars($item['desc']).'</p>';
+				if ($debug) {
+					$html .= '<h3>Relevancy Debug Information</h3>';
+					$html .= '<table><thead><tr>';
+					$html .= '<th>Parameter</th>';
+					$html .= '<th>Value</th>';
+					$html .= '<th>Max</th>';
+					$html .= '<th>Calculated</th>';
+					$html .= '<th>Weighting</th>';
+					$html .= '<th>Total</th>';
+					$html .= '</tr></thead><tbody>';
+					foreach ($this->model->config['weightings'] AS $key => $value) {
+						if (isset($item[$key.'total'])) {
+							$html .= '<tr><td><strong>'.htmlspecialchars(ucfirst($key)).'</strong></td>';
+							$html .= '<td>'.$item[$key].'</td>';
+							$html .= '<td class="centre">'.(empty($item[$key.'max']) ? 'n/a' : $item[$key.'max']).'</td>';
+							$html .= '<td class="centre">'.(empty($item[$key.'calc']) ? 'n/a' : number_format($item[$key.'calc'], 4)).'</td>';
+							$html .= '<td class="centre">'.$value.'</td>';
+							$html .= '<td class="right">'.number_format($item[$key.'total'], 4).'</td></tr>';
+						}
+					}
+					$html .= '<tr><td colspan="5" class="right">Total:</td><td>'.number_format($item['relevance'], 4).'</td></tr>';
+					$html .= '</tbody></table>';
+				}
 				$html .= '</li>';
 			}
 			$html .= '</ol>';
-		} elseif (!template::msgSet()) {
+		} elseif ($data === false && !template::msgSet()) {
 			trigger_error('No profiles match the selected parameters', E_USER_WARNING);
 		}
 		return $html;
 	}
 	
 	public function drawMap() {
-		
+		$html = $this->drawSearchControls();
+		if (($data = $this->model->getSearch()) !== false) {
+			$html .= $this->drawTabs('list');
+			$html .= '<ol id="list">';
+			foreach ($data AS $item) {
+			}
+		} elseif (!template::msgSet()) {
+			trigger_error('No profiles match the selected parameters', E_USER_WARNING);
+		}
+		return $html;
 	}
 	
 	public function drawProfile($profile) {
 		if (($data = $this->model->getProfile($profile)) !== false) {
-			
+			return '<pre>'.print_r($data, true).'</pre>';
 		} else {
 			trigger_error('The profile requested could not be found', E_USER_WARNING);
 			return $this->drawList();

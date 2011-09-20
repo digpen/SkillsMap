@@ -10,7 +10,7 @@ class skillsmap {
 		$this->model = new skillsmapModel($config, $profile);
 		$this->view = new skillsmapView($this->model);
 		if ($profile === false) {
-			if (!empty($_GET['list']) && in_array($_GET['list'], $this->model->config['views'])) $this->model->view = $_GET['view'];
+			if (!empty($_GET['view']) && in_array($_GET['view'], $this->model->config['views'])) $this->model->view = $_GET['view'];
 			if (isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0) {
 				$this->model->page = $_GET['page'];
 			}
