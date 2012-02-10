@@ -39,13 +39,19 @@ class skillsmapModel extends database {
 		if (!empty($this->search) && preg_match_all('#(NOT )?([a-zA-Z@.0-9\']++|"[^"]++")( OR)?#', str_replace(' OR NOT ', ' OR ', $this->search), $matches)) {
 			$terms = $matches[2];
 			$matches = array_map(null, $matches[1], $matches[2], $matches[3]);
+			$search = Array();
+			foreach ($this->config['searchFields'] AS $key => $item) {
+				$search = array_merge($search, $item);
+				$relevance[$key] = 'MATCH(`'.implode('`, `', $item).'`) AGAINST ("'.implode('", "', $terms).'")';
+				if ($debug && $key != 'desc') $fields[] = 'CONCAT_WS(", ", `'.implode('`, `', $item).'`) AS `'.$key.'`';
+			}
 			$query = Array();
 			$or = false;
 			$short = '';
 			foreach ($matches AS $match) {
 				$isOr = !empty($match[2]);
 				if (strlen($match[1]) < 4) { //  min word length, mysql will ignore
-					$short .= (empty($query) ? '' : ($or ? ' OR ' : ' AND ')).'CONCAT_WS(",", `'.implode('`, `', $fields).'`) LIKE ("%'.$this->slashData($match[1]).'%")';
+					$short .= (empty($query) ? '' : ($or ? ' OR ' : ' AND ')).'CONCAT_WS(",", `'.implode('`, `', $search).'`) LIKE ("%'.$this->slashData($match[1]).'%")';
 				} else {
 					$exact = strpos($match[1], '"') !== false || strpos($match[1], '.') !== false || strpos($match[1], '@') !== false;
 					$query[] = ($or ? '' : (empty($match[0]) ? '+' : '-')).($isOr ? '(' : '').$match[1].($exact ? '' : '*').($or && !$isOr ? ')' : '');
@@ -53,12 +59,6 @@ class skillsmapModel extends database {
 				$or = $isOr;
 			}
 			if ($isOr) $query .= ')';
-			$search = Array();
-			foreach ($this->config['searchFields'] AS $key => $item) {
-				$search = array_merge($search, $item);
-				$relevance[$key] = 'MATCH(`'.implode('`, `', $item).'`) AGAINST ("'.implode('", "', $terms).'")';
-				if ($debug && $key != 'desc') $fields[] = 'CONCAT_WS(", ", `'.implode('`, `', $item).'`) AS `'.$key.'`';
-			}
 			if (empty($query)) $sql[] = $short;
 			else $sql[] = 'MATCH(`'.implode('`, `', $search).'`) AGAINST (\''.implode(' ', $query).'\' IN BOOLEAN MODE)'.$short;
 		}
@@ -95,18 +95,18 @@ class skillsmapModel extends database {
 			}
 		}
 		// RELEVANCY ############################
-		if (empty($relevance)) {
-			return Array();
-		} else {
+		if (!empty($relevance)) {
 			foreach ($relevance AS $key => &$item) {
 				if ($debug) $fields[] = $item.' AS `'.$key.'calc`';
 				$item = '('.$item.')*'.$this->config['weightings'][$key];
 				if ($debug) $fields[] = $item.' AS `'.$key.'total`';
 			}
 			$fields[] = '('.implode(')+(', $relevance).') AS `relevance`';
-			$query = 'SELECT '.implode(', ', $fields).' FROM '.$tables.(empty($sql) ? '' : ' WHERE '.implode(' AND ', $sql)).' GROUP BY `profileID`'.$this->getSortLimitSql('`relevance`', 'desc', $this->page, $this->show);
-			return $this->getData($query);
+		} else {
+			$fields[] = '0 AS `relevance`';
 		}
+		$query = 'SELECT '.implode(', ', $fields).' FROM '.$tables.(empty($sql) ? '' : ' WHERE '.implode(' AND ', $sql)).' GROUP BY `profileID`'.$this->getSortLimitSql('`relevance`', 'desc', $this->page, $this->show);
+		return $this->getData($query);
 	}
 	
 	public function getProfile($profile) {

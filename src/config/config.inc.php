@@ -2,9 +2,9 @@
 $config = Array(
 	'database' => Array(
 		'host' => 'localhost',
-		'user' => 'will',
-		'pass' => 'will',
-		'name' => 'digpen'
+		'user' => 'digpen_skillsmap',
+		'pass' => '3Tequyap',
+		'name' => 'digpen_skillsmap'
 	),
 	'navigation' => Array(
 		Array(

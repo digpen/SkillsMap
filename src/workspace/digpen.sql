@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 14, 2011 at 11:15 AM
+-- Generation Time: Jan 10, 2012 at 03:46 PM
 -- Server version: 5.1.56
--- PHP Version: 5.3.2
+-- PHP Version: 5.3.8
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -18,6 +18,27 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 -- Database: `digpen`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `applications`
+--
+
+DROP TABLE IF EXISTS `applications`;
+CREATE TABLE IF NOT EXISTS `applications` (
+  `appID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `appName` char(32) NOT NULL,
+  `appCode` char(16) NOT NULL,
+  PRIMARY KEY (`appID`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `applications`
+--
+
+INSERT INTO `applications` (`appID`, `appName`, `appCode`) VALUES
+(1, 'Skillsmap', 'skillsmap');
 
 -- --------------------------------------------------------
 
@@ -37,6 +58,81 @@ CREATE TABLE IF NOT EXISTS `companies` (
 -- Dumping data for table `companies`
 --
 
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gallery`
+--
+
+DROP TABLE IF EXISTS `gallery`;
+CREATE TABLE IF NOT EXISTS `gallery` (
+  `galleryID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `galleryPage` int(10) unsigned NOT NULL,
+  `galleryName` varchar(64) NOT NULL,
+  `galleryDescription` text NOT NULL,
+  `galleryImage` varchar(32) NOT NULL,
+  `galleryLocation` varchar(32) NOT NULL,
+  `galleryDate` date NOT NULL,
+  `galleryMedium` varchar(32) NOT NULL,
+  `gallerySize` varchar(16) NOT NULL,
+  `gallerySold` tinyint(1) unsigned NOT NULL,
+  PRIMARY KEY (`galleryID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `gallery`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `images`
+--
+
+DROP TABLE IF EXISTS `images`;
+CREATE TABLE IF NOT EXISTS `images` (
+  `imageID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `imageName` varchar(32) NOT NULL,
+  `imageFile` varchar(32) NOT NULL,
+  PRIMARY KEY (`imageID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `images`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `nav`
+--
+
+DROP TABLE IF EXISTS `nav`;
+CREATE TABLE IF NOT EXISTS `nav` (
+  `navID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `navName` varchar(32) NOT NULL,
+  `navParent` int(10) unsigned NOT NULL DEFAULT '0',
+  `navRollover` varchar(64) NOT NULL,
+  `navHref` varchar(255) NOT NULL,
+  `navTitle` varchar(120) NOT NULL,
+  `navText` text NOT NULL,
+  `navApplication` int(10) unsigned NOT NULL,
+  `navShow` tinyint(1) unsigned NOT NULL,
+  `navActive` tinyint(1) unsigned NOT NULL,
+  `navOrder` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`navID`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `nav`
+--
+
+INSERT INTO `nav` (`navID`, `navName`, `navParent`, `navRollover`, `navHref`, `navTitle`, `navText`, `navApplication`, `navShow`, `navActive`, `navOrder`) VALUES
+(1, 'Home', 0, 'Go to the homepage', '', 'Homepage', 'Homepage', 0, 1, 1, 0),
+(2, 'Skilllsmap', 0, 'Skillsmap', 'skillsmap/', 'Skillsmap', 'Skillsmap', 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 

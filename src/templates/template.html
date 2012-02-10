@@ -1,31 +1,36 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<title>{TITLE}</title>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="content-language" content="en-gb" />
-	<meta name="copyright" content="{SITENAME} {YEAR}" />
-	<link rel="icon" type="image/vnd.microsoft.icon" href="{FOLDER}samuelearp.ico" />
-	<meta name="keywords" content="{KEYWORDS}" />
-	<meta name="description" content="{DESCRIPTION}" />
-	<meta name="robots" content="index,follow" />
-	<script type="text/javascript">
-	//<![CDATA[
-	document.getElementsByTagName("html")[0].className = "js";
-	//]]>
-	</script>
-	<link rel="stylesheet" type="text/css" href="{FOLDER}css/skillsmap.css" />
-	<!--[if lte IE 6]><link rel="stylesheet" type="text/css" href="{FOLDER}css/ie.css" /><![endif]-->
-</head>
-<body id="top">
-<div id="wrap" class="floatFix">
-	<h1 id="logo"><a href="{FOLDER}" title="Go back to the {SITENAME} homepage"><strong>{SITENAME}</strong></a></h1>
-	{NAV}
-	<div id="content" class="floatFix">
-		{MSG}
-		{CONTENT}
-	</div>
-</div>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-gb">
+	<head>
+		<title>#digpen - A community of web and IT professionals based in the South West peninsula of the UK</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<link type="text/css" href="/css/screen.css" rel="stylesheet" media="screen" />
+		<link type="text/css" href="/css/skillsmap.css" rel="stylesheet" media="screen" />
+		<script type="text/javascript" src="/jscript/jquery.js"></script>
+		<script type="text/javascript" src="/jscript/common.js"></script>
+		<script type="text/javascript" src="/jscript/cufon-yui.js"></script>
+		<script type="text/javascript" src="/jscript/Helvetica_Neue_Light_300.font.js"></script>
+		<script type="text/javascript">
+		Cufon.replace('h1');
+		Cufon.replace('h2');
+		//<![CDATA[
+		document.getElementsByTagName("html")[0].className = "js";
+		//]]>
+		</script>
+	</head>
+	<body> 
+		<div id="top_bar">
+			<div id="top_bar_inner">
+				<div id="logo"><a href="/" title="#digpen homepage"><img src="/images/logo.png" width="227" height="67" alt="DigPen" /></a></div>
+				<div id="tagline"><h1>The community for web professionals  in the South West peninsula of the UK</h1></div>
+				<div class="clear"><!-- --></div>
+			</div></div>
+		</div>
+		<div id="main">			
+			<div id="content" class="floatFix">
+				{MSG}
+				{CONTENT}
+			</div>
+		</div>
 {JAVASCRIPT}
-</body>
+	</body>
 </html>

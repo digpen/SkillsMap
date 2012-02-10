@@ -4,8 +4,8 @@
     RewriteEngine on
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d [OR]
-    RewriteCond %{REQUEST_URI} ^/digpen/src/$
-    RewriteRule ^.*$ /digpen/src/application/website.php
+    RewriteCond %{REQUEST_URI} ^/skillsmap/$
+    RewriteRule ^.*$ /skillsmap/application/website.php
   </filesmatch>
 </ifmodule>
 # GZip Components ####################################

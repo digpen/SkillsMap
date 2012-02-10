@@ -65,7 +65,7 @@ class template {
 	
 	public function unSlashData($data) {
 		if (is_array($data)) {
-			foreach ($data AS $key => $value) $data[$key] = unSlashData($value);
+			foreach ($data AS $key => $value) $data[$key] = $this->unSlashData($value);
 			return $data;
 		} else {
 			return stripslashes($data);
